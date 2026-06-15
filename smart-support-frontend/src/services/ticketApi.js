@@ -2,13 +2,11 @@ import axios from "axios";
 
 const ticketAPI = axios.create({
 
-    baseURL: "http://localhost:8082",
+baseURL: import.meta.env.VITE_TICKET_API,
 
-    headers: {
-
-        "Content-Type": "application/json"
-
-    }
+headers: {
+    "Content-Type": "application/json"
+}
 
 });
 
