@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(
         origins = {
                 "http://localhost:5173",
-                "https://smart-support-system-ai-powered-customer-support-8vb5pzb1k.vercel.app"
+                "https://smart-support-system-ai-powered-cus.vercel.app"
         }
 )
 public class AuthController {
