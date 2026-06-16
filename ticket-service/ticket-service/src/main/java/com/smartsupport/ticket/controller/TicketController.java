@@ -15,12 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/tickets")
 @RequiredArgsConstructor
-@CrossOrigin(
-        origins = {
-                "http://localhost:5173",
-                "https://smart-support-system-ai-powered-cus.vercel.app"
-        }
-)
+//@CrossOrigin(
+//        origins = {
+//                "http://localhost:5173",
+//                "https://smart-support-system-ai-powered-cus.vercel.app"
+//        }
+//)
 public class TicketController {
 
     private final TicketService ticketService;

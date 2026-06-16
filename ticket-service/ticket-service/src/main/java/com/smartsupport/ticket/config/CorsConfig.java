@@ -1,4 +1,4 @@
-package com.smartsupport.ticket.config;
+package com.smartsupport.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +18,9 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
 
-        config.setAllowedOrigins(List.of(
+        config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
-                "https://smart-support-system-ai-powered-cus.vercel.app"
+                "https://*.vercel.app"
         ));
 
         config.setAllowedHeaders(List.of("*"));
