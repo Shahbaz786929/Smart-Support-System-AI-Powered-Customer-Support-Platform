@@ -40,20 +40,26 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration =
                 new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
+        configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
-                "https://smart-support-system-ai-powered-customer-support-8vb5pzb1k.vercel.app"
+                "http://localhost:5174",
+                "http://localhost:5175",
+                "https://*.vercel.app"
         ));
 
-        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+        ));
 
         configuration.setAllowedHeaders(List.of("*"));
 
