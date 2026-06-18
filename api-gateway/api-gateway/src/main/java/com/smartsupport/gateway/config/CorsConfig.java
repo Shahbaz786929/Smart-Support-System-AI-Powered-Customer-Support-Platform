@@ -3,8 +3,8 @@ package com.smartsupport.gateway.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsWebFilter corsWebFilter() {
+    public CorsFilter corsFilter() {
 
         CorsConfiguration config = new CorsConfiguration();
 
@@ -20,17 +20,15 @@ public class CorsConfig {
 
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5175",
                 "https://*.vercel.app"
         ));
 
         config.setAllowedHeaders(List.of("*"));
 
         config.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "OPTIONS"
+                "GET", "POST", "PUT", "DELETE", "OPTIONS"
         ));
 
         UrlBasedCorsConfigurationSource source =
@@ -38,6 +36,6 @@ public class CorsConfig {
 
         source.registerCorsConfiguration("/**", config);
 
-        return new CorsWebFilter(source);
+        return new CorsFilter(source);
     }
 }

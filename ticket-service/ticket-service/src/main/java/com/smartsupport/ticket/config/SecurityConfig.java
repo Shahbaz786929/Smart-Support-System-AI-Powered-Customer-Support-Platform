@@ -1,78 +1,31 @@
 package com.smartsupport.ticket.config;
 
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import org.springframework.security.web.SecurityFilterChain;
-
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final GatewayAuthFilter gatewayAuthFilter;
+
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-
-                .cors(cors -> {})   // IMPORTANT
-
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/uploads/**").permitAll()
+                        .anyRequest().authenticated()
+                )
 
-                        .requestMatchers(
-                                "/uploads/**"
-                        ).permitAll()
-
-                        .anyRequest()
-                        .permitAll()
-                );
+                .addFilterBefore(gatewayAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
-        CorsConfiguration configuration =
-                new CorsConfiguration();
-
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:5175",
-                "https://*.vercel.app"
-        ));
-
-        configuration.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "OPTIONS"
-        ));
-
-        configuration.setAllowedHeaders(List.of("*"));
-
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration(
-                "/**",
-                configuration
-        );
-
-        return source;
     }
 }
