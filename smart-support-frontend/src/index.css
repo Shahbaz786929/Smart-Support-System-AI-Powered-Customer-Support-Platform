@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-primary: #2563eb;
+}
+
+html {
+  transition: background-color 0.2s ease;
+}
