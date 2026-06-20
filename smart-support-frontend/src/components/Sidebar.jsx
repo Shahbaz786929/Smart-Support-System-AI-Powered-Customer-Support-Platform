@@ -1,16 +1,20 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Ticket, FolderOpen, Users, BarChart3, Settings, Rocket, X } from "lucide-react";
+import {
+    LayoutDashboard, Ticket, FolderOpen,
+    Users, BarChart3, Settings, Rocket, X, Bell
+} from "lucide-react";
 
 function Sidebar({ open, onClose }) {
     const location = useLocation();
 
     const menu = [
-        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Create Ticket", icon: Ticket, path: "/create-ticket" },
-        { name: "My Tickets", icon: FolderOpen, path: "/my-tickets" },
-        { name: "Assigned Tickets", icon: Users, path: "/assigned-tickets" },
-        { name: "Analytics", icon: BarChart3, path: "/analytics" },
-        { name: "Settings", icon: Settings, path: "/settings" },
+        { name: "Dashboard",        icon: LayoutDashboard, path: "/dashboard" },
+        { name: "Create Ticket",    icon: Ticket,          path: "/create-ticket" },
+        { name: "My Tickets",       icon: FolderOpen,      path: "/my-tickets" },
+        { name: "Assigned Tickets", icon: Users,           path: "/assigned-tickets" },
+        { name: "Notifications",    icon: Bell,            path: "/notifications" },
+        { name: "Analytics",        icon: BarChart3,       path: "/analytics" },
+        { name: "Settings",         icon: Settings,        path: "/settings" },
     ];
 
     return (
@@ -51,11 +55,11 @@ function Sidebar({ open, onClose }) {
                                 to={item.path}
                                 onClick={onClose}
                                 className={`
-                                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                                ${active
-                                    ? "bg-blue-600 text-white"
-                                    : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
-                                }
+                                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                                    ${active
+                                        ? "bg-blue-600 text-white"
+                                        : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                                    }
                                 `}
                             >
                                 <Icon size={18} />

@@ -10,6 +10,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import Notifications from "./pages/Notifications";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
                     <Route path="/ticket/:id"       element={<TicketDetails />} />
                     <Route path="/analytics"        element={<Analytics />} />
                     <Route path="/settings"         element={<Settings />} />
+                    <Route path="/notifications"    element={<Notifications />} />
                 </Route>
             </Routes>
         </Router>
