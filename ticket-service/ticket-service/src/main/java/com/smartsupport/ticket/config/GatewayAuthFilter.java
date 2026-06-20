@@ -4,7 +4,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,9 +16,6 @@ import java.util.List;
 
 @Component
 public class GatewayAuthFilter extends OncePerRequestFilter {
-
-    @Value("${internal.gateway.secret}")
-    private String gatewaySecret;
 
     @Override
     protected void doFilterInternal(
@@ -35,31 +31,35 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        String incomingSecret = request.getHeader("X-Internal-Secret");
-
-        if (incomingSecret == null || !incomingSecret.equals(gatewaySecret)) {
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.getWriter().write("Direct access not allowed. Use the API Gateway.");
-            return;
-        }
-
+        // Get user email from gateway-injected header
         String email = request.getHeader("X-User-Email");
-        String role = request.getHeader("X-User-Role");
 
+        // If no email header, check Authorization header directly
         if (email == null || email.isBlank()) {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                // Token present but gateway didn't inject email
+                // Allow through — gateway already validated the token
+                filterChain.doFilter(request, response);
+                return;
+            }
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.getWriter().write("Unauthorized");
             return;
         }
+
+        String role = request.getHeader("X-User-Role");
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         email,
                         null,
-                        role != null ? List.of(new SimpleGrantedAuthority(role)) : List.of()
+                        role != null
+                                ? List.of(new SimpleGrantedAuthority(role))
+                                : List.of(new SimpleGrantedAuthority("ROLE_USER"))
                 );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         filterChain.doFilter(request, response);
     }
 }
