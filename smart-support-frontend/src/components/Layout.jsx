@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import ChatbotWidget from "./ChatbotWidget";
 
 function Layout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +17,8 @@ function Layout({ children }) {
                     {children}
                 </main>
             </div>
+
+            <ChatbotWidget />
 
         </div>
     );
