@@ -31,35 +31,25 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Get user email from gateway-injected header
         String email = request.getHeader("X-User-Email");
+        String role  = request.getHeader("X-User-Role");
 
-        // If no email header, check Authorization header directly
         if (email == null || email.isBlank()) {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                // Token present but gateway didn't inject email
-                // Allow through — gateway already validated the token
-                filterChain.doFilter(request, response);
-                return;
-            }
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Unauthorized");
+            response.getWriter().write("Unauthorized: No user identity");
             return;
         }
 
-        String role = request.getHeader("X-User-Role");
-
-        UsernamePasswordAuthenticationToken authentication =
+        UsernamePasswordAuthenticationToken auth =
                 new UsernamePasswordAuthenticationToken(
                         email,
                         null,
-                        role != null
-                                ? List.of(new SimpleGrantedAuthority(role))
-                                : List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                        List.of(new SimpleGrantedAuthority(
+                                role != null ? role : "ROLE_USER"
+                        ))
                 );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(auth);
         filterChain.doFilter(request, response);
     }
 }

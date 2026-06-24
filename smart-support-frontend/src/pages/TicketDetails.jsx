@@ -8,31 +8,31 @@ import {
 } from "lucide-react";
 
 const priorityBadge = {
-    HIGH:   "bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400",
+    HIGH: "bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400",
     MEDIUM: "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400",
-    LOW:    "bg-green-100 text-green-600 dark:bg-green-950/50 dark:text-green-400",
+    LOW: "bg-green-100 text-green-600 dark:bg-green-950/50 dark:text-green-400",
 };
 const statusBadge = {
-    OPEN:     "bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
+    OPEN: "bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
     RESOLVED: "bg-green-100 text-green-600 dark:bg-green-950/50 dark:text-green-400",
-    PENDING:  "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400",
-    CLOSED:   "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+    PENDING: "bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400",
+    CLOSED: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
 };
 
 function TicketDetails() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const [ticket,         setTicket]         = useState(null);
-    const [comments,       setComments]       = useState([]);
-    const [attachments,    setAttachments]    = useState([]);
-    const [loading,        setLoading]        = useState(true);
-    const [message,        setMessage]        = useState("");
+    const [ticket, setTicket] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [attachments, setAttachments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [message, setMessage] = useState("");
     const [commentLoading, setCommentLoading] = useState(false);
-    const [selectedFile,   setSelectedFile]   = useState(null);
-    const [uploadLoading,  setUploadLoading]  = useState(false);
-    const [uploadSuccess,  setUploadSuccess]  = useState(false);
-    const [activeTab,      setActiveTab]      = useState("details");
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [uploadLoading, setUploadLoading] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
+    const [activeTab, setActiveTab] = useState("details");
 
     useEffect(() => {
         fetchAll();
@@ -133,8 +133,8 @@ function TicketDetails() {
     }
 
     const tabs = [
-        { id: "details",     label: "Details",     icon: Tag },
-        { id: "comments",    label: `Comments (${comments.length})`,    icon: MessageSquare },
+        { id: "details", label: "Details", icon: Tag },
+        { id: "comments", label: `Comments (${comments.length})`, icon: MessageSquare },
         { id: "attachments", label: `Attachments (${attachments.length})`, icon: Paperclip },
     ];
 
@@ -239,6 +239,32 @@ function TicketDetails() {
                                 <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
                                     {ticket.summary}
                                 </p>
+                            </div>
+                        )}
+
+                        {/* Agent status update */}
+                        {ticket && (
+                            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 mt-4">
+                                <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Update Status</h2>
+                                <div className="flex gap-2 flex-wrap">
+                                    {["OPEN", "PENDING", "RESOLVED", "CLOSED"].map(s => (
+                                        <button
+                                            key={s}
+                                            onClick={async () => {
+                                                try {
+                                                    await ticketAPI.put(`/tickets/status/${ticket.id}`, { status: s });
+                                                    fetchAll();
+                                                } catch (e) { console.error(e); }
+                                            }}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition ${ticket.status === s
+                                                    ? "bg-blue-600 text-white border-blue-600"
+                                                    : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                }`}
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>

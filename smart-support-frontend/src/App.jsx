@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import CreateTicket from "./pages/CreateTicket";
 import MyTickets from "./pages/MyTickets";
 import AssignedTickets from "./pages/AssignedTickets";
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password"  element={<ResetPassword />} />
 
+                {/* User routes */}
                 <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard"        element={<Dashboard />} />
                     <Route path="/create-ticket"    element={<CreateTicket />} />
@@ -32,6 +34,11 @@ function App() {
                     <Route path="/analytics"        element={<Analytics />} />
                     <Route path="/settings"         element={<Settings />} />
                     <Route path="/notifications"    element={<Notifications />} />
+                </Route>
+
+                {/* Admin only route */}
+                <Route element={<ProtectedRoute requiredRole="ROLE_ADMIN" />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
                 </Route>
             </Routes>
         </Router>
