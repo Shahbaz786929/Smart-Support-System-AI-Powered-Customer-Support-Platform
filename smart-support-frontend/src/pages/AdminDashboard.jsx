@@ -25,6 +25,7 @@ function AdminDashboard() {
     const [priorities,  setPriorities]  = useState([]);
     const [activeUsers, setActiveUsers] = useState([]);
     const [allTickets,  setAllTickets]  = useState([]);
+    const [ratingData,  setRatingData]  = useState(null);
     const [loading,     setLoading]     = useState(true);
 
     useEffect(() => { fetchAll(); }, []);
@@ -32,18 +33,20 @@ function AdminDashboard() {
     const fetchAll = async () => {
         setLoading(true);
         try {
-            const [sumRes, catRes, priRes, usrRes, tickRes] = await Promise.all([
+            const [sumRes, catRes, priRes, usrRes, tickRes, ratingRes] = await Promise.all([
                 ticketAPI.get("/api/admin/analytics/summary"),
                 ticketAPI.get("/api/admin/analytics/category"),
                 ticketAPI.get("/api/admin/analytics/priority"),
                 ticketAPI.get("/api/admin/analytics/active-users"),
                 ticketAPI.get("/tickets/all"),
+                ticketAPI.get("/ratings/admin/all"),
             ]);
             setSummary(sumRes.data);
             setCategories(catRes.data || []);
             setPriorities(priRes.data || []);
             setActiveUsers(usrRes.data || []);
             setAllTickets((tickRes.data || []).slice(0, 10));
+            setRatingData(ratingRes.data);
         } catch (err) { console.error(err); }
         finally { setLoading(false); }
     };
@@ -100,10 +103,10 @@ function AdminDashboard() {
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {[
-                    { label: "Total Tickets",  value: summary?.totalTickets    ?? 0, icon: Ticket,       color: "text-blue-600",   bg: "bg-blue-50 dark:bg-blue-950/40" },
-                    { label: "Open",           value: summary?.openTickets     ?? 0, icon: AlertTriangle, color: "text-amber-600",  bg: "bg-amber-50 dark:bg-amber-950/40" },
-                    { label: "Resolved",       value: summary?.resolvedTickets ?? 0, icon: CheckCircle,   color: "text-green-600",  bg: "bg-green-50 dark:bg-green-950/40" },
-                    { label: "Total Users",    value: summary?.totalUsers      ?? 0, icon: Users,         color: "text-purple-600", bg: "bg-purple-50 dark:bg-purple-950/40" },
+                    { label: "Total Tickets", value: summary?.totalTickets    ?? 0, icon: Ticket,        color: "text-blue-600",   bg: "bg-blue-50 dark:bg-blue-950/40" },
+                    { label: "Open",          value: summary?.openTickets     ?? 0, icon: AlertTriangle,  color: "text-amber-600",  bg: "bg-amber-50 dark:bg-amber-950/40" },
+                    { label: "Resolved",      value: summary?.resolvedTickets ?? 0, icon: CheckCircle,    color: "text-green-600",  bg: "bg-green-50 dark:bg-green-950/40" },
+                    { label: "Total Users",   value: summary?.totalUsers      ?? 0, icon: Users,          color: "text-purple-600", bg: "bg-purple-50 dark:bg-purple-950/40" },
                 ].map(s => {
                     const Icon = s.icon;
                     return (
@@ -119,6 +122,91 @@ function AdminDashboard() {
                     );
                 })}
             </div>
+
+            {/* Rating Summary */}
+            {ratingData && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+
+                    {/* Satisfaction Score */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+                        <div className="flex items-center gap-2 mb-4">
+                            <Star size={16} className="text-amber-500 fill-amber-500" />
+                            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Customer Satisfaction</h2>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            <div className="text-center flex-shrink-0">
+                                <p className="text-4xl font-bold text-amber-500">{ratingData.averageRating || "—"}</p>
+                                <div className="flex gap-0.5 justify-center mt-1">
+                                    {[1,2,3,4,5].map(i => (
+                                        <Star key={i} size={14}
+                                            className={i <= Math.round(ratingData.averageRating || 0)
+                                                ? "text-amber-400 fill-amber-400"
+                                                : "text-slate-300 dark:text-slate-600"} />
+                                    ))}
+                                </div>
+                                <p className="text-xs text-slate-400 mt-1">{ratingData.totalRatings} reviews</p>
+                            </div>
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-green-600 dark:text-green-400 w-16 flex-shrink-0">Positive</span>
+                                    <div className="flex-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                        <div className="h-full rounded-full bg-green-500 transition-all"
+                                            style={{ width: `${ratingData.totalRatings > 0 ? (ratingData.positiveRatings / ratingData.totalRatings) * 100 : 0}%` }} />
+                                    </div>
+                                    <span className="text-xs text-slate-500 w-6 text-right">{ratingData.positiveRatings}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-red-500 w-16 flex-shrink-0">Negative</span>
+                                    <div className="flex-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                        <div className="h-full rounded-full bg-red-500 transition-all"
+                                            style={{ width: `${ratingData.totalRatings > 0 ? (ratingData.negativeRatings / ratingData.totalRatings) * 100 : 0}%` }} />
+                                    </div>
+                                    <span className="text-xs text-slate-500 w-6 text-right">{ratingData.negativeRatings}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Reviews */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
+                        <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Recent Reviews</h2>
+                        {!ratingData.ratings?.length ? (
+                            <div className="flex items-center justify-center h-24 text-slate-400 text-sm">No reviews yet</div>
+                        ) : (
+                            <div className="space-y-3 max-h-44 overflow-y-auto">
+                                {ratingData.ratings.slice(0, 5).map((r, i) => (
+                                    <div key={i} className="flex items-start gap-3 pb-3 border-b border-slate-50 dark:border-slate-800 last:border-0">
+                                        <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                                            {(r.userEmail || "U").slice(0, 1).toUpperCase()}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <div className="flex gap-0.5">
+                                                    {[1,2,3,4,5].map(s => (
+                                                        <Star key={s} size={11}
+                                                            className={s <= r.rating
+                                                                ? "text-amber-400 fill-amber-400"
+                                                                : "text-slate-300 dark:text-slate-600"} />
+                                                    ))}
+                                                </div>
+                                                <span className="text-xs text-slate-400">Ticket #{r.ticketId}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                                {r.userEmail}
+                                            </p>
+                                            {r.comment && (
+                                                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 italic">
+                                                    "{r.comment}"
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Analytics Row */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
@@ -171,7 +259,7 @@ function AdminDashboard() {
                 {/* Most active users */}
                 <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5">
                     <div className="flex items-center gap-2 mb-4">
-                        <Star size={15} className="text-blue-600" />
+                        <Users size={15} className="text-blue-600" />
                         <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Most Active Users</h2>
                     </div>
                     <div className="space-y-3">

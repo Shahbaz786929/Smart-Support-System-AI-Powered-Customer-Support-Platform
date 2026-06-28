@@ -6,6 +6,7 @@ import {
     ArrowLeft, RefreshCw, Paperclip, MessageSquare,
     Bot, Send, Upload, Download, User, Clock, Tag
 } from "lucide-react";
+import RatingWidget from "../components/RatingWidget";
 
 const priorityBadge = {
     HIGH: "bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400",
@@ -257,8 +258,8 @@ function TicketDetails() {
                                                 } catch (e) { console.error(e); }
                                             }}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition ${ticket.status === s
-                                                    ? "bg-blue-600 text-white border-blue-600"
-                                                    : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                ? "bg-blue-600 text-white border-blue-600"
+                                                : "border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                                                 }`}
                                         >
                                             {s}
@@ -267,6 +268,12 @@ function TicketDetails() {
                                 </div>
                             </div>
                         )}
+                        <RatingWidget
+                            ticketId={ticket.id}
+                            ticketStatus={ticket.status}
+                            userEmail={localStorage.getItem("userEmail")}
+                            ticketOwnerEmail={ticket.userEmail}
+                        />
                     </div>
                 )}
 

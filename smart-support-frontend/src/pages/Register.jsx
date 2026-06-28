@@ -83,7 +83,7 @@ function Register() {
                             <label className="text-sm text-slate-600 dark:text-slate-400 mb-1.5 block">Full name</label>
                             <div className="relative">
                                 <User size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                                <input type="text" name="name" value={user.name} onChange={handleChange} placeholder="Mohammad Shahbaz"
+                                <input type="text" name="name" value={user.name} onChange={handleChange} placeholder="Enter Your Full Name"
                                     className="w-full h-[46px] rounded-lg pl-10 pr-4 border outline-none text-sm bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500 transition" />
                             </div>
                         </div>
